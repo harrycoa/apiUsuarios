@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/harrycoa/apiUsuarios/handlers"
 	"net/http"
 	"time"
+
+	"github.com/gorilla/mux"
+	"www.github.com/harrycoa/apiUsuarios/handlers"
 )
 
 func main() {

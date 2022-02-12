@@ -2,25 +2,26 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/gorilla/mux"
-	"github.com/harrycoa/apiUsuarios/entities"
-	"github.com/harrycoa/apiUsuarios/services"
+	"fmt"
 	"net/http"
+
+	"github.com/gorilla/mux"
+	"www.github.com/harrycoa/apiUsuarios/entities"
+	"www.github.com/harrycoa/apiUsuarios/services"
 )
 
 const (
-	GET  string = "GET"
-	POST string = "POST"
-	PUT string = "PUT"
+	GET    string = "GET"
+	POST   string = "POST"
+	PUT    string = "PUT"
 	DELETE string = "DELETE"
 )
 
 type UsuarioController interface {
-	HandleGeneral(w http.ResponseWriter, r *http.Request)
-	HandleOne(w http.ResponseWriter, r *http.Request)
+	HandleGeneral(writer http.ResponseWriter, request *http.Request)
+	HandleOne(writer http.ResponseWriter, request *http.Request)
 }
 
-// constructor
 type usuarioController struct {
 	service services.UsuarioService
 }
@@ -28,58 +29,62 @@ type usuarioController struct {
 func NewUsuarioController() UsuarioController {
 	return &usuarioController{
 		service: services.NewUsuarioService(),
-
 	}
 }
 
-// Attach
-func (h *usuarioController) HandleGeneral(w http.ResponseWriter, r *http.Request) {
-
-	if r.Method == GET {
+func (h *usuarioController) HandleGeneral(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Set("Content-Type", "application/json")
+	fmt.Println(request.Method)
+	if request.Method == GET {
 		usuarios := h.service.FindAll()
-		json.NewEncoder(w).Encode(" Funciona")
+		json.NewEncoder(writer).Encode(usuarios)
 	}
-	if r.Method == POST {
+	if request.Method == POST {
 		usuario := entities.Usuario{}
-		json.NewDecoder(r.Body).Decode(&usuario)
-		h.service.Save()
-		json.NewEncoder(w).Encode(" Funciona POST")
-	}
-	if r.Method == PUT {
-		id, encontrado := mux.Vars(r)["id"]
-		if encontrado {
-			usuario := entities.Usuario{}
-			json.NewDecoder(r.Body).Decode(&usuario)
-			usuarioNew := h.service.Update(id, usuario)
+		json.NewDecoder(request.Body).Decode(&usuario)
 
-			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(usuarioNew)
-			return
-		}
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode("Error encontrado")
+		h.service.Save(usuario)
+		json.NewEncoder(writer).Encode(usuario)
 	}
 
+	// if request.Method == DELETE {
+	// 	json.NewEncoder(writer).Encode(DELETE)
+	// }
 }
+func (h *usuarioController) HandleOne(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Set("Content-Type", "application/json")
 
-func (h *usuarioController) HandleOne(w http.ResponseWriter, r *http.Request) {
-	if r.Method == POST {
-		id, encontrado := mux.Vars(r)["id"]
+	if request.Method == GET {
+		id, encontrado := mux.Vars(request)["id"]
 
 		if encontrado {
-			usuario,err := h.service.FindOne(id)
+			usuario, err := h.service.FindOne(id)
 
-			if err != nil{
-				w.WriteHeader(http.StatusNotFound)
-				json.NewEncoder(w).Encode(err.Error())
+			if err != nil {
+				writer.WriteHeader(http.StatusNotFound)
+				json.NewEncoder(writer).Encode(err.Error())
 				return
 			}
-
-			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(usuario)
+			writer.WriteHeader(http.StatusOK)
+			json.NewEncoder(writer).Encode(usuario)
 			return
 		}
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(nil)
+
+		writer.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(writer).Encode(nil)
+	}
+	if request.Method == PUT {
+		id, encontrado := mux.Vars(request)["id"]
+		if encontrado {
+			usuario := entities.Usuario{}
+			json.NewDecoder(request.Body).Decode(&usuario)
+
+			usuarioNew := h.service.Update(id, usuario)
+
+			writer.WriteHeader(http.StatusOK)
+			json.NewEncoder(writer).Encode(usuarioNew)
+			return
+		}
+		json.NewEncoder(writer).Encode("Error encontrado..")
 	}
 }
