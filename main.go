@@ -18,6 +18,7 @@ func main() {
 
 	router := mux.NewRouter()
 
+	// Rutas
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
 		if r.Method == GET {
@@ -27,6 +28,21 @@ func main() {
 			json.NewEncoder(w).Encode(" Funciona POST")
 		}
 
+	})
+
+	router.HandleFunc("/{id}", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == POST {
+			id, encontrado := mux.Vars(r)["id"]
+
+			if encontrado {
+				cadena := "se recibio el id = " + id
+				w.WriteHeader(http.StatusOK)
+				json.NewEncoder(w).Encode(cadena)
+				return
+			}
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(nil)
+		}
 	})
 
 	// Servidor
