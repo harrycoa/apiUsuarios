@@ -1,13 +1,12 @@
 package services
 
 import (
-
 	"github.com/harrycoa/apiUsuarios/entities"
 	"github.com/harrycoa/apiUsuarios/repository"
 )
 
 type UsuarioService interface {
-	FindAll() [] entities.Usuario
+	FindAll() []entities.Usuario
 	FindOne(id string) (entities.Usuario, error)
 	Save(entities.Usuario) entities.Usuario
 	Update(id string, entities.Usuario) entities.Usuario

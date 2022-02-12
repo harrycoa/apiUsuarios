@@ -69,7 +69,7 @@ func (repo *usuarioRepository) Save(usuario entities.Usuario) entities.Usuario{
 }
 func (repo *usuarioRepository) Update(id string, usuario entities.Usuario) entities.Usuario{
 	idEntero, _ := strconv.Atoi(id)
-	usuariosFinal := []entities.Usuario
+	usuariosFinal := []entities.Usuario{}
 	for _, usuarioOriginal := range repo.usuarios {
 		if idEntero == usuario.Id {
 			usuariosFinal = append(usuariosFinal, usuario)

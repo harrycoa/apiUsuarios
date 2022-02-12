@@ -9,16 +9,16 @@ import (
 )
 
 func main() {
-	handlerGeneral := handlers.NewHandlerGeneral()
+	usuarioController := handlers.NewUsuarioController()
 
 	fmt.Println("Servidor")
 
 	router := mux.NewRouter()
 
 	// Rutas
-	router.HandleFunc("/", handlerGeneral.HandleGeneral)
+	router.HandleFunc("/", usuarioController.HandleGeneral)
 
-	router.HandleFunc("/{id}", handlerGeneral.HandleOne)
+	router.HandleFunc("/{id}", usuarioController.HandleOne)
 
 	// Servidor
 	server := http.Server{
